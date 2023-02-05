@@ -1,0 +1,71 @@
+
+situation([XAgent,YAgent,ShipsList,CapacityAgent],result(A,S))
+  XAgent,YAgent location of the agent
+  ShipsList  list of currentShips (in the successor state)
+  CapacityAgent the capacity of agents' boat
+  A the Action
+  S the state
+
+successor state axioms 
+  if A = up then 
+     ShipsList=ShipsListPrev,CapacityAgent=CapacityAgentPrev,YAgent=YAgentPrev(ships,Capacity and YAgent do not change ) 
+     XAgent = XAgentPrev-1 , XAgentPrev - 1>=0 (the current location should be vaild not negative)
+  if A = down then 
+     ShipsList=ShipsListPrev,CapacityAgent=CapacityAgentPrev,YAgent=YAgentPrev(ships,Capacity and YAgent do not change ) 
+     XAgent = XAgentPrev+1 , XAgentPrev + 1<N (the current location should be vaild less than number of rows)
+  if A = left then 
+     ShipsList=ShipsListPrev,CapacityAgent=CapacityAgentPrev,XAgent=XAgentPrev(ships,Capacity and XAgent do not change ) 
+     YAgent = YAgentPrev-1 , YAgentPrev - 1>=0 (check the current location should be vaild not negative)
+  if A = right then 
+     ShipsList=ShipsListPrev,CapacityAgent=CapacityAgentPrev,XAgent=XAgentPrev(ships,Capacity and XAgent do not change ) 
+     YAgent = YAgentPrev+1 , YAgentPrev+1,YAgentPrev + 1<M (check the current location should be vaild less than number od columns)
+  if A = pickup then 
+     XAgent=XAgentPrev,YAgent=YAgentPrev(agent location do not change ) 
+     CapacityAgent = CapacityAgentPrev-1 (to pickup the capacity should be decreased),
+     CapacityAgentPrev>0 (the agent can pickup if the capacity >0 )
+     select([XAgentPrev,YAgentPrev],ShipsListPrev,ShipsList)(remove the ship the agent stands on form the list of ships in state S)
+     
+  if A = drop then 
+     XAgent=XAgentPrev,YAgent=YAgentPrev(agent location do not change ) 
+     capacity(MaxCapacity),CapacityAgentPrev<MaxCapacity(the agent can drop only if the capacity not full has 
+     atleast one passengers on the boat),station(XAgentPrev,YAgentPrev)(the agent should stands on the station)
+     CapacityAgent=MaxCapacity.
+
+test case 
+  grid(3,3).
+  agent_loc(0,1).
+  ships_loc([[2,2],[1,2]]).
+  station(1,1).
+  capacity(1).
+
+  goal(S).
+  0.188 CPU in 0.193 seconds 
+  S = result(drop, result(left, result(pickup, result(right, result(drop, result(left, result(up, result(pickup, result(right, result(down, result(down, s0)))))))))))
+
+  
+  goal(result(up,result(down,s0)))
+  0.000 CPU in 0.000 seconds
+  false
+
+  grid(4,4).
+  agent_loc(0,2).
+  ships_loc([[1,2], [3,2]]).
+  station(1,1).
+  capacity(2).
+
+  goal(S).
+  0.031 CPU in 0.041 seconds
+  S = result(drop, result(left, result(pickup, result(up, result(up, result(pickup, result(down, result(down, result(down, s0)))))))))
+
+  grid(3,3).
+  agent_loc(0,1).
+  ships_loc([]).
+  station(1,1).
+  capacity(1).
+
+  goal(S)
+  0.000 CPU in 0.000 seconds
+  S = s0
+
+
+   
